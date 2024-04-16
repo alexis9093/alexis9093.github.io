@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="lib/GRAF/three.js-r84/build/three.js"></script>
+    <script type="text/javascript" src="lib/GRAF/three.js-r84/examples/js/controls/OrbitControls.js"></script>
+    
+</head>
+<body>
+    <script type="text/javascript">
+        function init(){
+             //Modelo de color 
+             var color1= new THREE.Color('#000000');
+           
+           //crear Escena.
+           var escena = new THREE.Scene();
+
+           //crear Renderer.
+           var renderer = new THREE.WebGLRenderer();
+
+           renderer.setSize(1330,600);
+           renderer.setClearColor(color1);
+
+           //Crear Camara.
+           var camara = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,10000);
+           camara.position.set(50,50,50);
+           camara.lookAt(escena.position);
+
+           document.body.appendChild(renderer.domElement);
+
+           //Crear Ejes
+           var ejes = new THREE.AxisHelper(50);
+           escena.add(ejes);
+
+           //Crear Control Mouse
+           var mouse = new THREE.OrbitControls(camara,renderer.domElement);
+
+           //Crear GRIDS
+           var grid1 = new THREE.GridHelper(150,30,0x00ff00,0xff0000);
+           escena.add(grid1);
+           var grid2 = new THREE.GridHelper(150,30,0xcce6ff,0xb3ff99);
+           grid2.rotation.x=Math.PI/2;
+           escena.add(grid2);
+
+           //modelado 3D - //
+           var formaindicador = new THREE.Shape();
+       
+         formaindicador.moveTo(-25,5);
+         formaindicador.lineTo(-30,15);
+         formaindicador.lineTo(-30,20);
+         formaindicador.lineTo(-25,15);
+         formaindicador.lineTo(-20,20);
+         formaindicador.lineTo(-20,15);
+
+         //Opciones de extrusion
+         var opciones={
+            amount: 1,
+            steps: 50,
+            bevelThickness: 10,
+            bevelSize: 1,
+            bevelSegments: 1
+         };
+        
+       var geoIndicador = new THREE.ExtrudeGeometry(formaindicador,opciones);
+       var matIndicador = new THREE.MeshBasicMaterial({color:"blue",wireframe: true,side: THREE.DoubleSide});
+       var Indicador= new THREE.Mesh(geoIndicador,matIndicador);
+       escena.add(Indicador);
+
+       //geometrias 3D
+       //1.- Cubo 1
+       var CuboG = new THREE.BoxGeometry(20,10,10);
+       var MatCubo = new  THREE.MeshBasicMaterial({color: "yellow", wireframe: false, side: THREE.DoubleSide});
+       var cubo1 = new THREE.Mesh(CuboG,MatCubo);
+       //escena.add(cubo1);
+
+       //2.- cubo 2
+       var cuboG2= new THREE.BoxGeometry(20,20,20);
+        var ColoresCubo2=[
+        new THREE.MeshBasicMaterial ({color:'#ff66a3'}),
+        new THREE.MeshBasicMaterial ({color:'#ffff66'}),
+        new THREE.MeshBasicMaterial ({color:'#ffb366'}),
+        new THREE.MeshBasicMaterial ({color:'#6666ff'}),
+        new THREE.MeshBasicMaterial ({color:'#8cd98c'}),
+        new THREE.MeshBasicMaterial ({color:'#b366ff'})
+        ];
+
+        var cuboM2=new THREE.MeshFaceMaterial(ColoresCubo2);
+        var cubo2 =new THREE.Mesh (cuboG2, cuboM2);
+        cubo2.position.set(0,0,-30);
+        escena.add(cubo2);
+
+       //3.- Cubo 3
+       var cubRub = new THREE.Mesh();
+
+       for(var x = 0; x<3; x++){
+           for(var y = 0; y<3; y++){
+               for(var z = 0; z<3; z++){
+                var CuboR = new THREE.BoxGeometry(2,2,2);
+                var cubitos = new THREE.Mesh(CuboR, cuboM2);
+                cubitos.position.set (x*4,y*4,z*4);
+                cubRub.add(cubitos);
+               }
+           }
+       }
+       escena.add(cubRub);
+
+       //4.- MAPPING(Texture map)
+       //Carga de textura
+       var textura = new THREE.TextureLoader().load("Img/descarga (1).jpg");
+       textura.wrapS = textura.wrapT = THREE.RepeatWrapping;
+       textura.repeat.set(1,1);
+
+       var CuboG4 = new THREE.BoxGeometry(20,20,20);
+       var CuboM4 = new THREE.MeshBasicMaterial({map: textura, wireframe: false, side: THREE.DoubleSide});
+       var Cubo4 = new THREE.Mesh(CuboG4,CuboM4);
+       Cubo4.position.set(40,0,-30);
+       escena.add(Cubo4);
+       
+       //Esfera
+       var EsferaG = new THREE.SphereGeometry(10,30,30,0,Math.PI*2,0,Math.PI*2);
+       var EsferaM = new THREE.MeshBasicMaterial({map: textura, wireframe: true, side: THREE.DoubleSide});
+       var Esfera= new THREE.Mesh(EsferaG,EsferaM);
+       Esfera.position.set(-40,0,-20);
+       escena.add(Esfera);
+
+       //Cilindro
+       var textura2 = new THREE.TextureLoader().load("Img/landscape_68891.jpg");
+       var CilindroG = new THREE.CylinderGeometry(10,10,30,50,50,false,Math.PI*2);
+       var CilindroM = new THREE.MeshBasicMaterial({map: textura2, wireframe: false, side: THREE.DoubleSide});
+       var Cilindro= new THREE.Mesh(CilindroG,CilindroM);
+       Cilindro.position.set(-90,0,0);
+       escena.add(Cilindro);
+
+       //Torus
+       var textura3 = new THREE.TextureLoader().load("Img/descarga (2).jpg");
+       var TorusG = new THREE.TorusGeometry(20,150,50,50,Math.PI*2);
+       var TorusM = new THREE.MeshBasicMaterial({map: textura3, wireframe: false, side: THREE.DoubleSide});
+       var Torus= new THREE.Mesh(TorusG,TorusM);
+       Torus.position.set(0,0,0);
+       escena.add(Torus);
+
+       //Construcciones 3D
+       //1.-
+       var Fig1G = new THREE.TorusKnotGeometry(10,1.5,150,10,5,50);
+       var Fig1M = new THREE.MeshBasicMaterial({map: textura3,wireframe:false,side: THREE.DoubleSide});
+       var Fig1 = new THREE.Mesh(Fig1G,Fig1M);
+       Fig1.position.set(40,0,25);
+       escena.add(Fig1);
+
+       //2.-
+       var Fig2G = new THREE.IcosahedronGeometry(10,0);
+       var Fig2M = new THREE.MeshBasicMaterial({color:"pink",wireframe:false,side: THREE.DoubleSide});
+       var Fig2 = new THREE.Mesh(Fig2G,Fig2M);
+       Fig2.position.set(0,0,25);
+       escena.add(Fig2);
+
+       //3.-
+       var Fig3G = new THREE.DodecahedronGeometry(10,0);
+       var Fig3M = new THREE.MeshBasicMaterial({color:"yellow",wireframe:false,side: THREE.DoubleSide});
+       var Fig3 = new THREE.Mesh(Fig3G,Fig3M);
+       Fig3.position.set(-20,0,25);
+       escena.add(Fig3);
+
+       //4.-
+       var Fig4G = new THREE.OctahedronGeometry(10,0);
+       var Fig4M = new THREE.MeshBasicMaterial({color:"#66ff33",wireframe:false,side: THREE.DoubleSide});
+       var Fig4 = new THREE.Mesh(Fig4G,Fig4M);
+       Fig4.position.set(-40,0,25);
+       escena.add(Fig4);
+
+       //5.-
+       var Fig5G = new THREE.TetrahedronGeometry(10,0);
+       var Fig5M = new THREE.MeshBasicMaterial({color:"#00ffff",wireframe:false,side: THREE.DoubleSide});
+       var Fig5 = new THREE.Mesh(Fig5G,Fig5M);
+       Fig5.position.set(-60,0,25);
+       escena.add(Fig5);
+       
+           var update = function()
+            {
+               /* Cubo4.rotation.x +=0.01;
+                Cubo4.rotation.y +=0.01;
+                Esfera.rotation.x +=0.01;
+                Esfera.rotation.y +=0.01;
+                //Cubo4.position.x +=0.2;
+                Cilindro.rotation.y +=0.01;
+                */
+                Torus.rotation.x +=0.01;
+                Torus.rotation.y +=0.01;
+            
+
+            };
+
+            var render = function()
+            {
+                renderer.render(escena,camara);
+            };
+
+            var loop = function()
+            {
+                update();
+                render();
+                requestAnimationFrame(loop);
+            };
+
+            loop();
+                }
+        window.onload = init;
+        
+    </script>
+</body>
+</html>
